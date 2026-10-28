@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefWidth="510.0" spacing="18.0" stylesheets="@../css/agenda.css"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="br.com.igor.mycontacts.controller.ContatoFormController">
+    <padding><Insets top="24.0" right="24.0" bottom="24.0" left="24.0"/></padding>
+    <Label fx:id="tituloLabel" text="Cadastrar contato" styleClass="titulo"/>
+    <Label text="Nome, telefone e e-mail são obrigatórios." styleClass="subtitulo"/>
+    <GridPane hgap="14.0" vgap="14.0">
+        <columnConstraints>
+            <ColumnConstraints minWidth="85.0"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+        <Label text="Tipo" labelFor="$tipoCombo" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="tipoCombo" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="Nome" labelFor="$nomeField" GridPane.rowIndex="1"/>
+        <TextField fx:id="nomeField" promptText="Nome completo" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="Telefone" labelFor="$telefoneField" GridPane.rowIndex="2"/>
+        <TextField fx:id="telefoneField" promptText="(85) 99999-9999" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <Label text="E-mail" labelFor="$emailField" GridPane.rowIndex="3"/>
+        <TextField fx:id="emailField" promptText="nome@exemplo.com" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <Label text="Empresa" labelFor="$empresaField" GridPane.rowIndex="4"/>
+        <TextField fx:id="empresaField" promptText="Opcional, para contatos comerciais" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+    </GridPane>
+    <Label fx:id="erroLabel" text="Confira os campos informados." wrapText="true" maxWidth="460.0"
+           minHeight="60.0" prefHeight="60.0" maxHeight="60.0" styleClass="erro"/>
+    <HBox spacing="10.0" alignment="CENTER_RIGHT">
+        <Button text="Cancelar" onAction="#cancelar" cancelButton="true"/>
+        <Button text="Salvar contato" onAction="#salvar" defaultButton="true" styleClass="primario"/>
+    </HBox>
+</VBox>

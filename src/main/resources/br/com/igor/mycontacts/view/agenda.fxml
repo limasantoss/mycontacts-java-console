@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="620.0" prefWidth="1050.0" stylesheets="@../css/agenda.css"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.com.igor.mycontacts.controller.AgendaController">
+    <top>
+        <VBox spacing="18.0" styleClass="cabecalho">
+            <padding><Insets top="24.0" right="24.0" bottom="20.0" left="24.0"/></padding>
+            <Label text="MyContacts" styleClass="titulo"/>
+            <Label text="Seus contatos pessoais e comerciais em um só lugar." styleClass="subtitulo"/>
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+                <Label text="Nome:" labelFor="$buscaField"/>
+                <TextField fx:id="buscaField" promptText="Digite o nome ou parte dele" onAction="#buscar" HBox.hgrow="ALWAYS"/>
+                <Button text="Buscar" onAction="#buscar" styleClass="primario"/>
+                <Button text="Limpar" onAction="#limparBusca"/>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <VBox spacing="12.0">
+            <padding><Insets top="18.0" right="24.0" bottom="18.0" left="24.0"/></padding>
+            <HBox spacing="10.0">
+                <Button text="Cadastrar contato" onAction="#cadastrar" styleClass="primario"/>
+                <Button fx:id="editarButton" text="Editar" onAction="#editar"/>
+                <Button fx:id="removerButton" text="Remover" onAction="#remover" styleClass="perigo"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Atualizar" onAction="#atualizar"/>
+            </HBox>
+            <TableView fx:id="contatosTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="60.0"/>
+                    <TableColumn fx:id="nomeColumn" text="Nome" prefWidth="210.0"/>
+                    <TableColumn fx:id="telefoneColumn" text="Telefone" prefWidth="145.0"/>
+                    <TableColumn fx:id="emailColumn" text="E-mail" prefWidth="250.0"/>
+                    <TableColumn fx:id="tipoColumn" text="Tipo" prefWidth="110.0"/>
+                    <TableColumn fx:id="empresaColumn" text="Empresa" prefWidth="180.0"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+    <bottom>
+        <Label fx:id="statusLabel" text="Selecione um contato para editar ou remover." styleClass="status" maxWidth="Infinity"/>
+    </bottom>
+</BorderPane>
