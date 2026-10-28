@@ -2,129 +2,140 @@ package br.com.igor.mycontacts.app;
 
 import br.com.igor.mycontacts.controller.Agenda;
 import br.com.igor.mycontacts.exceptions.ContatoNaoEncontradoException;
+import br.com.igor.mycontacts.exceptions.NomeDuplicadoException;
+import br.com.igor.mycontacts.exceptions.PersistenciaException;
 import br.com.igor.mycontacts.model.Contato;
 import br.com.igor.mycontacts.model.ContatoComercial;
 import br.com.igor.mycontacts.utils.ValidadorEmail;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
+    private static final Logger LOG = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        Agenda agenda = new Agenda();
-        boolean executando = true;
-
-        System.out.println("=== Bem-vindo ao MyContacts ===");
-
-        while (executando) {
-            exibirMenu();
-            String opcao = scanner.nextLine();
-
-            switch (opcao) {
-                case "1":
-                    adicionarContato(scanner, agenda);
+        try (Scanner scanner = new Scanner(System.in)) {
+            Agenda agenda = new Agenda();
+            System.out.println("=== Bem-vindo ao MyContacts ===");
+            boolean executando = true;
+            while (executando) {
+                exibirMenu();
+                if (!scanner.hasNextLine()) {
                     break;
-                case "2":
-                    listarContatos(agenda);
-                    break;
-                case "3":
-                    buscarContato(scanner, agenda);
-                    break;
-                case "4":
-                    removerContato(scanner, agenda);
-                    break;
-                case "5":
-                    executando = false;
-                    System.out.println("Encerrando o sistema. Ate logo!");
-                    break;
-                default:
-                    System.out.println("Opcao invalida. Tente novamente.");
-                    break;
+                }
+                String opcao = scanner.nextLine().strip();
+                try {
+                    switch (opcao) {
+                        case "1" -> salvarContato(scanner, agenda, null);
+                        case "2" -> agenda.listarContatos();
+                        case "3" -> {
+                            System.out.print("Nome ou parte do nome: ");
+                            List<Contato> encontrados = agenda.buscarContatosPorNome(scanner.nextLine());
+                            if (encontrados.isEmpty()) {
+                                System.out.println("Nenhum contato encontrado.");
+                            } else {
+                                encontrados.forEach(System.out::println);
+                            }
+                        }
+                        case "4" -> removerContato(scanner, agenda);
+                        case "5" -> executando = false;
+                        case "6" -> salvarContato(scanner, agenda, lerId(scanner));
+                        default -> System.out.println("Opção inválida. Tente novamente.");
+                    }
+                } catch (PersistenciaException e) {
+                    mostrarFalha(e);
+                } catch (IllegalArgumentException | ContatoNaoEncontradoException e) {
+                    System.out.println(e.getMessage());
+                }
             }
+            System.out.println("Encerrando o sistema. Até logo!");
+        } catch (PersistenciaException e) {
+            mostrarFalha(e);
+        } catch (NoSuchElementException e) {
+            System.out.println("Entrada encerrada. Até logo!");
         }
-
-        scanner.close();
     }
 
     private static void exibirMenu() {
-        System.out.println();
-        System.out.println("1 - Adicionar contato");
-        System.out.println("2 - Listar contatos");
-        System.out.println("3 - Buscar contato por nome");
-        System.out.println("4 - Remover contato");
-        System.out.println("5 - Sair");
-        System.out.print("Escolha uma opcao: ");
+        System.out.println("\n1 - Adicionar contato\n2 - Listar contatos\n3 - Buscar contato por nome"
+                + "\n4 - Remover contato por ID\n5 - Sair\n6 - Editar contato por ID");
+        System.out.print("Escolha uma opção: ");
     }
 
-    private static void adicionarContato(Scanner scanner, Agenda agenda) {
+    private static void salvarContato(Scanner scanner, Agenda agenda, Long id) {
+        if (id != null) {
+            System.out.println("Editando: " + agenda.buscarContatoPorId(id));
+            System.out.println("Informe todos os campos novamente.");
+        }
         System.out.print("Nome: ");
         String nome = scanner.nextLine();
-
         System.out.print("Telefone: ");
         String telefone = scanner.nextLine();
-
         String email = lerEmailValido(scanner);
-
-        System.out.print("O contato e comercial? (s/n): ");
-        String resposta = scanner.nextLine();
-
+        System.out.print("O contato é comercial? (s/n): ");
+        boolean comercial = scanner.nextLine().strip().equalsIgnoreCase("s");
         Contato contato;
-
-        if (resposta.equalsIgnoreCase("s")) {
-            System.out.print("Empresa: ");
-            String empresa = scanner.nextLine();
-            contato = new ContatoComercial(nome, telefone, email, empresa);
+        if (comercial) {
+            System.out.print("Empresa (opcional): ");
+            contato = new ContatoComercial(nome, telefone, email, scanner.nextLine());
         } else {
             contato = new Contato(nome, telefone, email);
         }
-
-        agenda.adicionarContato(contato);
-        System.out.println("Contato adicionado com sucesso.");
+        contato.setId(id);
+        try {
+            agenda.salvar(contato, false);
+        } catch (NomeDuplicadoException e) {
+            System.out.print(e.getMessage() + " (s/n): ");
+            if (!scanner.nextLine().strip().equalsIgnoreCase("s")) {
+                System.out.println("Operação cancelada.");
+                return;
+            }
+            agenda.salvar(contato, true);
+        }
+        System.out.println("Contato salvo com sucesso. ID: " + contato.getId());
     }
 
     private static String lerEmailValido(Scanner scanner) {
-        String email;
-
         while (true) {
-            System.out.print("Email: ");
-            email = scanner.nextLine();
-
+            System.out.print("E-mail: ");
+            String email = scanner.nextLine().strip();
             if (ValidadorEmail.validar(email)) {
                 return email;
-            } else {
-                System.out.println("Email invalido. Digite novamente.");
             }
+            System.out.println("E-mail inválido. Digite novamente (ex.: nome@exemplo.com).");
         }
     }
 
-    private static void listarContatos(Agenda agenda) {
-        System.out.println();
-        System.out.println("=== Lista de Contatos ===");
-        agenda.listarContatos();
-    }
-
-    private static void buscarContato(Scanner scanner, Agenda agenda) {
-        System.out.print("Digite o nome do contato: ");
-        String nome = scanner.nextLine();
-
+    private static long lerId(Scanner scanner) {
+        System.out.print("ID do contato: ");
         try {
-            Contato contato = agenda.buscarContatoPorNome(nome);
-            System.out.println("Contato encontrado:");
-            System.out.println(contato);
-        } catch (ContatoNaoEncontradoException e) {
-            System.out.println(e.getMessage());
+            long id = Long.parseLong(scanner.nextLine().strip());
+            if (id > 0) {
+                return id;
+            }
+        } catch (NumberFormatException e) {
+            // A mensagem abaixo também atende a entradas que não são números.
         }
+        throw new IllegalArgumentException("Informe um ID numérico positivo.");
     }
 
     private static void removerContato(Scanner scanner, Agenda agenda) {
-        System.out.print("Digite o nome do contato a remover: ");
-        String nome = scanner.nextLine();
-
-        try {
-            agenda.removerContatoPorNome(nome);
+        long id = lerId(scanner);
+        Contato contato = agenda.buscarContatoPorId(id);
+        System.out.print("Remover " + contato + "? (s/n): ");
+        if (scanner.nextLine().strip().equalsIgnoreCase("s")) {
+            agenda.removerContatoPorId(id);
             System.out.println("Contato removido com sucesso.");
-        } catch (ContatoNaoEncontradoException e) {
-            System.out.println(e.getMessage());
+        } else {
+            System.out.println("Exclusão cancelada.");
         }
+    }
+
+    private static void mostrarFalha(PersistenciaException e) {
+        System.out.println(e.getMessage());
+        LOG.log(Level.SEVERE, "Falha de persistência no console", e);
     }
 }
