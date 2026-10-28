@@ -34,25 +34,6 @@ mvn -Pverificar-interface test
 
 O perfil gráfico abre e fecha janelas automaticamente. Ele gera imagens das telas em `target/verificacao-ui/` e inclui os testes normais. O JAR comum do Maven não contém as dependências; utilize os comandos acima para iniciar a aplicação.
 
-### Configuração utilizada neste workspace Windows
-
-Java e Maven não estavam no `PATH`. Foram encontrados no IntelliJ instalado: **OpenJDK/JBR 25.0.4** e **Maven 3.9.16**. Para usar exatamente essas instalações em uma sessão PowerShell:
-
-```powershell
-$env:JAVA_HOME = 'C:\Program Files\JetBrains\IntelliJ IDEA 2026.2.3\jbr'
-$env:Path = "$env:JAVA_HOME\bin;C:\Program Files\JetBrains\IntelliJ IDEA 2026.2.3\plugins\maven-plugin\lib\maven3\bin;$env:Path"
-java -version
-mvn -version
-
-# Cache Maven dentro do workspace, usado nas verificações deste ambiente
-mvn "-Dmaven.repo.local=.maven-repository" clean verify
-mvn "-Dmaven.repo.local=.maven-repository" compile javafx:run
-mvn "-Dmaven.repo.local=.maven-repository" compile exec:java
-mvn "-Dmaven.repo.local=.maven-repository" -Pverificar-interface test
-```
-
-O parâmetro `maven.repo.local` é opcional fora deste ambiente restrito. O cache `.maven-repository/` é ignorado pelo Git. Os caminhos de instalação acima são específicos da máquina utilizada; ajuste-os em outro computador.
-
 ## Funcionalidades e regras
 
 - Tabela com ID, nome, telefone, e-mail, tipo e empresa; busca por parte do nome, botão Limpar e atualização da lista.
