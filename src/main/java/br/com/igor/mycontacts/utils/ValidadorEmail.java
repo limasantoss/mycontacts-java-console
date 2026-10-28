@@ -1,6 +1,13 @@
 package br.com.igor.mycontacts.utils;
 
+import java.util.regex.Pattern;
+
 public final class ValidadorEmail {
+
+    // Validação de formato para a agenda; não verifica a existência da caixa postal.
+    private static final Pattern FORMATO = Pattern.compile(
+            "^[A-Za-z0-9_%+\\-]+(?:\\.[A-Za-z0-9_%+\\-]+)*@"
+            + "(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z]{2,63}$");
 
     private ValidadorEmail() {
     }
@@ -10,6 +17,6 @@ public final class ValidadorEmail {
             return false;
         }
 
-        return email.contains("@") && email.contains(".");
+        return email.length() <= 254 && FORMATO.matcher(email).matches();
     }
 }

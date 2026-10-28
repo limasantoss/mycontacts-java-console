@@ -1,0 +1,27 @@
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #f5f7fb;
+    -fx-text-fill: #172b4d;
+}
+.cabecalho { -fx-background-color: #e8eef8; }
+.titulo { -fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #17365d; }
+.subtitulo { -fx-text-fill: #52657d; }
+.button {
+    -fx-padding: 9px 16px;
+    -fx-background-radius: 6px;
+    -fx-background-color: #e1e7ef;
+    -fx-text-fill: #17365d;
+    -fx-cursor: hand;
+}
+.button:hover { -fx-background-color: #d0dae8; }
+.button.primario { -fx-background-color: #245cad; -fx-text-fill: white; }
+.button.primario:hover { -fx-background-color: #194a91; }
+.button.perigo { -fx-text-fill: #a12735; }
+.button:focused { -fx-border-color: #17365d; -fx-border-radius: 6px; }
+.text-field, .combo-box { -fx-padding: 8px; -fx-background-radius: 5px; }
+.table-view { -fx-background-color: white; -fx-border-color: #d6dfeb; }
+.table-view .column-header { -fx-background-color: #e8eef8; -fx-padding: 10px 4px; }
+.table-row-cell:filled:selected { -fx-background-color: #245cad; }
+.status { -fx-padding: 12px 24px; -fx-background-color: #e8eef8; -fx-text-fill: #52657d; }
+.erro { -fx-text-fill: #a12735; -fx-background-color: #ffedf0; -fx-padding: 10px; -fx-background-radius: 5px; }
