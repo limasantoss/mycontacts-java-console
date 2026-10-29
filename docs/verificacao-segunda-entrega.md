@@ -2,6 +2,8 @@
 
 Fechamento realizado em **28/10/2026**. Este registro separa as verificações executadas nesta máquina da revisão externa no Java 17 informada pelo responsável.
 
+Este é um registro histórico. A preparação para IntelliJ, os resultados de 29/10/2026 e a comparação com as páginas 10–12 do PDF estão em [revisao-intellij.md](revisao-intellij.md).
+
 ## Origem das verificações
 
 | Origem | Ambiente | O que foi verificado |
@@ -16,16 +18,16 @@ O alvo `--release 17` da compilação local é diferente da versão da JVM que e
 Java e Maven foram localizados na instalação do IntelliJ. Comandos utilizados:
 
 ```powershell
-$env:JAVA_HOME = 'C:\Program Files\JetBrains\IntelliJ IDEA 2026.2.3\jbr'
-$mavenProjeto = 'C:\Program Files\JetBrains\IntelliJ IDEA 2026.2.3\plugins\maven-plugin\lib\maven3\bin\mvn.cmd'
+# Caminhos fornecidos pelo ambiente local, sem fixar a instalação de uma máquina:
+# JAVA_HOME aponta para o JDK; mvn está no PATH.
 
 & "$env:JAVA_HOME\bin\java.exe" -version
-& $mavenProjeto -version
-& $mavenProjeto '-Dmaven.repo.local=.maven-repository' -o -B -Pverificar-interface verify
+mvn -version
+mvn '-Dmaven.repo.local=.maven-repository' -o -B -Pverificar-interface verify
 git diff --check
 ```
 
-O modo offline (`-o`) funcionou porque as dependências já estavam no cache local. Em uma máquina nova, omita `-o` para permitir o download das dependências. A saída Maven desta rodada foi preservada em `target/verificacao-local-final.log`; os XML JUnit em `target/surefire-reports/` foram consultados para confirmar os resultados e a JVM utilizada.
+O exemplo acima foi normalizado para evitar caminhos absolutos; a rodada original usou o Java e o Maven incluídos na instalação local do IntelliJ. O modo offline (`-o`) funcionou porque as dependências já estavam no cache local. Em uma máquina nova, omita `-o` para permitir o download das dependências. A saída Maven desta rodada foi preservada em `target/verificacao-local-final.log`; os XML JUnit em `target/surefire-reports/` foram consultados para confirmar os resultados e a JVM utilizada.
 
 | Classe | Testes | Falhas | Erros | Ignorados |
 | --- | ---: | ---: | ---: | ---: |
@@ -55,7 +57,7 @@ Não foi encontrado um executável do Scene Builder no `PATH`, nas pastas usuais
 Foi consultado o [site oficial da Gluon](https://gluonhq.com/products/scene-builder/), que direcionou ao [MSI do Scene Builder 26.0.0 para Windows](https://download2.gluonhq.com/scenebuilder/26.0.0/install/win/SceneBuilder-26.0.0.msi). O download ficou em `%TEMP%\mycontacts-scene-builder\SceneBuilder-26.0.0.msi`. A instalação por usuário concluiu com **código 0**, e foi confirmado o executável versão **26.0.0** em:
 
 ```text
-C:\Users\igorl\AppData\Local\SceneBuilder\SceneBuilder.exe
+%LOCALAPPDATA%\SceneBuilder\SceneBuilder.exe
 ```
 
 Os dois arquivos foram abertos diretamente nesse executável. As janelas foram identificadas e operadas por automação do Windows; foram capturadas imagens do editor e de **Preview > Show Preview in Window (Ctrl+P)**. A prévia da agenda foi reposicionada para caber na tela. A área de edição tem rolagem porque é menor que o tamanho preferido da agenda; a prévia permite ver o layout inteiro.
