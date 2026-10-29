@@ -28,10 +28,12 @@ dados/
 # IDEs
 .idea/
 *.iml
+out/
 .classpath
 .project
 .settings/
 .vscode/
+*.code-workspace
 
 # OS
 Thumbs.db
